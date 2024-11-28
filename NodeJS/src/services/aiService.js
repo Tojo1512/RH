@@ -26,7 +26,7 @@ class AIService {
           options: {
             temperature: 0.7,
             top_p: 0.9,
-            num_predict: 150,
+            num_predict: 500,
             num_ctx: 2048,
             num_thread: 4,
             repeat_penalty: 1.1,
