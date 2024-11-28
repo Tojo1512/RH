@@ -5,7 +5,14 @@ const apiRoutes = require("./src/routes/api");
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+// Configuration CORS
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Remplacez par l'URL de votre frontend Vue.js
+    methods: ["GET", "POST", "DELETE"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
 
 app.use("/api", apiRoutes);
 
