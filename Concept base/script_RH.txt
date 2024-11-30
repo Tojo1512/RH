@@ -1,5 +1,5 @@
 CREATE TABLE Users(
-   id_user INTEGER,
+   id_user SERIAL,
    login VARCHAR(50)  NOT NULL,
    mail VARCHAR(100)  NOT NULL,
    mdp VARCHAR(250)  NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE Users(
 );
 
 CREATE TABLE Type_contract(
-   id_type_contract INTEGER,
+   id_type_contract SERIAL,
    nom VARCHAR(50)  NOT NULL,
    description VARCHAR(50)  NOT NULL,
    duree INTEGER NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE Type_contract(
 );
 
 CREATE TABLE Types_conge(
-   id_conge INTEGER,
+   id_conge SERIAL,
    type VARCHAR(50)  NOT NULL,
    est_remunere BOOLEAN,
    nombre VARCHAR(50)  NOT NULL,
@@ -24,29 +24,29 @@ CREATE TABLE Types_conge(
 );
 
 CREATE TABLE Salaire(
-   id_salaire TEXT,
+   id_salaire SERIAL,
    type VARCHAR(50)  NOT NULL,
    montant NUMERIC(15,2)   NOT NULL,
    PRIMARY KEY(id_salaire)
 );
 
 CREATE TABLE Services(
-   id_service INTEGER,
+   id_service SERIAL,
    nom VARCHAR(50)  NOT NULL,
    PRIMARY KEY(id_service)
 );
 
 CREATE TABLE Categorie_personnel(
-   id_categorie_personnel INTEGER,
+   id_categorie_personnel SERIAL,
    nom VARCHAR(50)  NOT NULL,
    poste VARCHAR(50)  NOT NULL,
-   id_salaire TEXT NOT NULL,
+   id_salaire SERIAL NOT NULL,
    PRIMARY KEY(id_categorie_personnel),
    FOREIGN KEY(id_salaire) REFERENCES Salaire(id_salaire)
 );
 
 CREATE TABLE Personnels(
-   id_personnel INTEGER,
+   id_personnel SERIAL,
    matricule VARCHAR(50)  NOT NULL,
    nom VARCHAR(100)  NOT NULL,
    prenom VARCHAR(250)  NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE Personnels(
 );
 
 CREATE TABLE Demandes_conge(
-   id_demande_congee INTEGER,
+   id_demande_congee SERIAL,
    date_demande TIMESTAMP NOT NULL,
    date_fin TIMESTAMP NOT NULL,
    motif VARCHAR(250) ,
@@ -78,7 +78,7 @@ CREATE TABLE Demandes_conge(
 );
 
 CREATE TABLE Absences(
-   id_absence INTEGER,
+   id_absence SERIAL,
    date_absence DATE NOT NULL,
    id_personnel INTEGER NOT NULL,
    PRIMARY KEY(id_absence),
@@ -86,7 +86,7 @@ CREATE TABLE Absences(
 );
 
 CREATE TABLE Heure_sup(
-   id_heure_sup INTEGER,
+   id_heure_sup SERIAL,
    date_heure_sup DATE NOT NULL,
    duree INTEGER NOT NULL,
    id_personnel INTEGER NOT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE Heure_sup(
 );
 
 CREATE TABLE Heure_nuit(
-   id_heure_nuit INTEGER,
+   id_heure_nuit SERIAL,
    date_heure_nuit DATE NOT NULL,
    duree INTEGER NOT NULL,
    id_personnel INTEGER NOT NULL,
@@ -104,8 +104,8 @@ CREATE TABLE Heure_nuit(
 );
 
 CREATE TABLE Contrats(
-   id_personnel INTEGER,
-   id_type_contract INTEGER,
+   id_personnel SERIAL ,
+   id_type_contract SERIAL,
    date_debut DATE NOT NULL,
    date_fin DATE NOT NULL,
    duree VARCHAR(50)  NOT NULL,
@@ -115,8 +115,8 @@ CREATE TABLE Contrats(
 );
 
 CREATE TABLE droit_conge(
-   id_personnel INTEGER,
-   id_conge INTEGER,
+   id_personnel SERIAL,
+   id_conge SERIAL,
    annee INTEGER NOT NULL,
    PRIMARY KEY(id_personnel, id_conge),
    FOREIGN KEY(id_personnel) REFERENCES Personnels(id_personnel),
