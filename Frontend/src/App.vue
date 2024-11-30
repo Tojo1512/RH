@@ -1,45 +1,40 @@
 <script>
-import ChatBubble from './components/ChatBubble.vue'
+// import NavBar from './components/NavBar.vue'
+import LoginForm from './components/LoginForm.vue'
 
 export default {
   name: 'App',
   components: {
-    ChatBubble,
+    // NavBar,
+    LoginForm,
   },
 }
 </script>
 
 <template>
   <div id="app">
-    <ChatBubble />
+    <div class="main-content">
+      <LoginForm />
+    </div>
   </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<style>
+#app {
+  font-family: Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f5f6fa;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.main-content {
+  padding-top: 80px; /* Espace pour la navbar fixe */
+  min-height: calc(100vh - 80px);
 }
 </style>
