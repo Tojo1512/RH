@@ -1,51 +1,66 @@
 <template>
-  <div class="chat-container">
-    <div class="chat-messages" ref="messageContainer">
-      <TransitionGroup name="message">
-        <div
-          v-for="message in allMessages"
-          :key="message.id"
-          :class="['message', getMessageClass(message)]"
-        >
-          <template v-if="message.type === 'status'">
-            <div class="typing-indicator" v-if="message.status === 'processing'">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <span v-else>{{ message.content }}</span>
-          </template>
-          <template v-else>
-            <div class="message-content">
-              <div class="message-header" v-if="message.sender === 'bot'">
-                <div class="avatar">
-                  <svg viewBox="0 0 24 24" class="bot-icon">
-                    <path
-                      fill="currentColor"
-                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
-                    />
-                  </svg>
-                </div>
-                <span class="bot-name">FrAssistant</span>
-              </div>
-              <div class="formatted-content" v-html="formatMessage(message.content)"></div>
-            </div>
-          </template>
-        </div>
-      </TransitionGroup>
-    </div>
+  <div class="chat-widget">
+    <button v-if="!isOpen" @click="toggleChat" class="chat-bubble-button">
+      <svg viewBox="0 0 24 24" class="chat-icon">
+        <path
+          fill="currentColor"
+          d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
+        />
+      </svg>
+    </button>
 
-    <div class="chat-input">
-      <input
-        v-model="newMessage"
-        @keyup.enter="sendMessage"
-        :disabled="isLoading"
-        placeholder="Écrivez votre message..."
-      />
-      <button @click="sendMessage" :disabled="isLoading || !newMessage.trim()">
-        <span v-if="!isLoading">Envoyer</span>
-        <span v-else>...</span>
-      </button>
+    <div v-if="isOpen" class="chat-container">
+      <div class="chat-header">
+        <span>FrAssistant</span>
+        <button @click="toggleChat" class="close-button">×</button>
+      </div>
+      <div class="chat-messages" ref="messageContainer">
+        <TransitionGroup name="message">
+          <div
+            v-for="message in allMessages"
+            :key="message.id"
+            :class="['message', getMessageClass(message)]"
+          >
+            <template v-if="message.type === 'status'">
+              <div class="typing-indicator" v-if="message.status === 'processing'">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <span v-else>{{ message.content }}</span>
+            </template>
+            <template v-else>
+              <div class="message-content">
+                <div class="message-header" v-if="message.sender === 'bot'">
+                  <div class="avatar">
+                    <svg viewBox="0 0 24 24" class="bot-icon">
+                      <path
+                        fill="currentColor"
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+                      />
+                    </svg>
+                  </div>
+                  <span class="bot-name">FrAssistant</span>
+                </div>
+                <div class="formatted-content" v-html="formatMessage(message.content)"></div>
+              </div>
+            </template>
+          </div>
+        </TransitionGroup>
+      </div>
+
+      <div class="chat-input">
+        <input
+          v-model="newMessage"
+          @keyup.enter="sendMessage"
+          :disabled="isLoading"
+          placeholder="Écrivez votre message..."
+        />
+        <button @click="sendMessage" :disabled="isLoading || !newMessage.trim()">
+          <span v-if="!isLoading">Envoyer</span>
+          <span v-else>...</span>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -59,6 +74,7 @@ export default {
   name: 'ChatBubble',
   data() {
     return {
+      isOpen: false,
       messages: [],
       statusMessages: [],
       newMessage: '',
@@ -72,6 +88,12 @@ export default {
     },
   },
   methods: {
+    toggleChat() {
+      this.isOpen = !this.isOpen
+      if (this.isOpen && !this.conversationId) {
+        this.createConversation()
+      }
+    },
     getMessageClass(message) {
       return {
         'user-message': message.sender === 'user',
@@ -225,36 +247,104 @@ export default {
 </script>
 
 <style scoped>
+.chat-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.chat-bubble-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-color: #007bff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.chat-bubble-button:hover {
+  transform: scale(1.1);
+  background-color: #0056b3;
+}
+
+.chat-icon {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
 .chat-container {
-  width: 400px;
-  height: 600px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 350px;
+  height: 500px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+  background-color: white;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 12px 15px;
+  background-color: #007bff;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 5px;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.close-button:hover {
+  opacity: 1;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .chat-messages {
-  flex-grow: 1;
+  flex: 1;
   overflow-y: auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  background-color: #f8f9fa;
 }
 
 .message {
-  max-width: 70%;
-  padding: 10px;
+  max-width: 80%;
+  padding: 10px 15px;
   border-radius: 15px;
   margin: 5px 0;
-  opacity: 0;
-  animation: fadeIn 0.3s ease forwards;
-}
-
-.message.persistent {
-  opacity: 1;
-  animation: none;
 }
 
 .user-message {
@@ -264,53 +354,57 @@ export default {
 }
 
 .bot-message {
-  background-color: #e9ecef;
-  color: black;
+  background-color: white;
+  color: #ffffff;
   align-self: flex-start;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .chat-input {
-  display: flex;
   padding: 15px;
+  background-color: white;
+  border-top: 1px solid #e9ecef;
+  display: flex;
   gap: 10px;
-  border-top: 1px solid #ccc;
 }
 
-input {
-  flex-grow: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  outline: none;
 }
 
-button {
-  padding: 8px 15px;
+.chat-input button {
+  padding: 8px 16px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 20px;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #0056b3;
-}
-
-/* Ajout des styles pour l'état de chargement */
-.message.loading {
-  background-color: #f8f9fa;
-  color: #6c757d;
-  font-style: italic;
+.chat-input button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .status-message {
-  background-color: #f8f9fa !important;
-  color: #6c757d !important;
+  align-self: center;
+  background-color: #f8f9fa;
+  color: #666;
   font-size: 0.9em;
-  padding: 5px 10px !important;
-  max-width: 100% !important;
-  text-align: center;
-  align-self: center !important;
+  padding: 5px 10px;
+}
+
+/* Support pour les petits écrans */
+@media (max-width: 480px) {
+  .chat-container {
+    width: calc(100vw - 40px);
+    height: calc(100vh - 120px);
+    right: 20px;
+  }
 }
 
 .fade-in {
