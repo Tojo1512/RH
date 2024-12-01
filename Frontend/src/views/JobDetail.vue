@@ -81,7 +81,7 @@ export default {
 
         const response = await axios.post('http://localhost:3000/api/candidatures', {
           id_offre: this.job.id_offre,
-          id_user: userData.id,
+          id_user: userData.user.id,
           cv: 'URL_du_CV',
           lettre_motivation: 'URL_de_la_lettre',
           date_candidature: new Date().toISOString().split('T')[0],
