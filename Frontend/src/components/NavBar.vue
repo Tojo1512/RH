@@ -1,115 +1,84 @@
 <template>
   <nav class="navbar">
-    <div class="nav-brand">
-      <router-link to="/home">RH Manager</router-link>
-    </div>
+    <div class="nav-brand">Mon Application</div>
+    <div class="nav-links">
+      <span class="user-name">Bienvenue, {{ userName }}</span>
+      <router-link to="/home">Accueil</router-link>
 
-    <div class="nav-items">
-      <template v-if="currentUser">
-        <span class="user-info"> Bienvenue, {{ currentUser.login }} </span>
-        <button @click="handleLogout" class="logout-btn">Déconnexion</button>
-      </template>
-      <template v-else>
-        <router-link to="/login" class="login-btn"> Connexion </router-link>
-      </template>
+      <a @click="logout" class="logout-btn">Déconnexion</a>
     </div>
   </nav>
 </template>
 
 <script>
 export default {
-  name: 'NavBar',
+  name: 'Navbar',
   data() {
     return {
-      currentUser: null,
+      userName: '',
     }
   },
   created() {
-    // Vérifier l'utilisateur au chargement
-    this.checkUser()
-    // Écouter les changements de l'utilisateur
-    window.addEventListener('storage', this.checkUser)
+    // Récupérer les données utilisateur du localStorage
+    const userData = localStorage.getItem('user')
+    if (userData) {
+      const user = JSON.parse(userData)
+      this.userName = user.user.login
+    }
   },
   methods: {
-    checkUser() {
-      const userStr = localStorage.getItem('user')
-      this.currentUser = userStr ? JSON.parse(userStr) : null
-    },
-    handleLogout() {
+    logout() {
       localStorage.removeItem('user')
-      this.currentUser = null
-      this.$router.push('/login')
+      this.$router.push('/')
     },
-  },
-  beforeUnmount() {
-    // Nettoyer l'écouteur d'événements
-    window.removeEventListener('storage', this.checkUser)
   },
 }
 </script>
 
 <style scoped>
 .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  background-color: #2c3e50;
+  background-color: #333;
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
-  height: 60px; /* Hauteur fixe pour la navbar */
 }
 
-.nav-brand a {
-  color: white;
-  text-decoration: none;
+.nav-brand {
   font-size: 1.5rem;
   font-weight: bold;
 }
 
-.nav-items {
+.nav-links {
   display: flex;
+  gap: 2rem;
   align-items: center;
-  gap: 1rem;
-  z-index: 1001; /* S'assurer que les éléments sont cliquables */
 }
 
-.user-info {
-  margin-right: 1rem;
+.nav-links a {
   color: white;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 1.2rem;
 }
 
-.logout-btn,
-.login-btn {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  z-index: 1001; /* S'assurer que les boutons sont cliquables */
+.nav-links a:hover {
+  color: #4caf50;
+}
+
+.user-name {
+  color: #4caf50;
+  font-weight: bold;
+  font-size: 1.1rem;
 }
 
 .logout-btn {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-}
-
-.login-btn {
-  background-color: #3498db;
-  color: white;
-  text-decoration: none;
-  display: inline-block; /* Assure que le lien est cliquable */
-}
-
-.logout-btn:hover {
-  background-color: #c0392b;
-}
-
-.login-btn:hover {
-  background-color: #2980b9;
+  color: #ff4444 !important;
 }
 </style>

@@ -1,14 +1,24 @@
-const UserModel = require("../models/userModel");
+const pool = require("../config/database");
 
 class AuthService {
   static async verifierLoginMdp(login, mdp) {
     try {
-      const user = await UserModel.findByCredentials(login, mdp);
+      const query = {
+        text: "SELECT * FROM Users WHERE login = $1 AND mdp = $2",
+        values: [login, mdp],
+      };
 
-      if (user) {
+      const result = await pool.query(query);
+
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
         return {
           success: true,
-          user: user,
+          user: {
+            id: user.id_user,
+            login: user.login,
+            est_admin: user.est_admin,
+          },
         };
       }
 

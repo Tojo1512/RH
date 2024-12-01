@@ -1,40 +1,21 @@
-<script>
-// import NavBar from './components/NavBar.vue'
-import LoginForm from './components/LoginForm.vue'
+<template>
+  <router-view></router-view>
+</template>
 
+<script>
 export default {
   name: 'App',
-  components: {
-    // NavBar,
-    LoginForm,
-  },
 }
 </script>
 
-<template>
-  <div id="app">
-    <div class="main-content">
-      <LoginForm />
-    </div>
-  </div>
-</template>
-
 <style>
-#app {
-  font-family: Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background-color: #f5f6fa;
-}
-
-.main-content {
-  padding-top: 80px; /* Espace pour la navbar fixe */
-  min-height: calc(100vh - 80px);
+  font-family: Arial, sans-serif;
 }
 </style>

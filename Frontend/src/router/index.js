@@ -1,15 +1,13 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import LoginForm from '../components/LoginForm.vue'
-import dotenv from 'dotenv'
-dotenv.config()
-Vue.use(VueRouter)
+import { createRouter, createWebHistory } from 'vue-router'
+import LoginForm from '@/components/LoginForm.vue'
+import Home from '@/views/Home.vue'
 
 const routes = [
   {
     path: '/',
-    redirect: '/login',
+    name: 'Login',
+    component: LoginForm,
+    meta: { requiresGuest: true },
   },
   {
     path: '/home',
@@ -18,29 +16,24 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: LoginForm,
+    path: '/:pathMatch(.*)*',
+    redirect: '/',
   },
 ]
 
-const router = new VueRouter({
-  mode: 'history',
-  base: '/',
+const router = createRouter({
+  history: createWebHistory(),
   routes,
 })
 
-// Navigation guard
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('user')
+  const user = localStorage.getItem('user')
 
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!isAuthenticated) {
-      next('/login')
-    } else {
-      next()
-    }
-  } else if (to.path === '/login' && isAuthenticated) {
+  if (to.meta.requiresAuth && !user) {
+    // Si la route nécessite une authentification et qu'il n'y a pas d'utilisateur
+    next('/')
+  } else if (to.meta.requiresGuest && user) {
+    // Si on essaie d'accéder au login alors qu'on est déjà connecté
     next('/home')
   } else {
     next()
