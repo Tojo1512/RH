@@ -22,8 +22,8 @@ class JobController {
 
       // Validation des données
       if (!id_offre || !id_user || !cv || !lettre_motivation) {
-        return res.status(400).json({ 
-          message: "Tous les champs sont obligatoires" 
+        return res.status(400).json({
+          message: "Tous les champs sont obligatoires",
         });
       }
 
@@ -33,25 +33,27 @@ class JobController {
         cv,
         lettre_motivation,
         date_candidature: new Date(),
-        statut: 'En attente'
+        statut: "En attente",
       });
 
       res.status(201).json(newApplication);
     } catch (error) {
-      console.error('Erreur dans submitApplication:', error);
-      
-      if (error.message === 'Offre d\'emploi non trouvée' || 
-          error.message === 'Utilisateur non trouvé') {
+      console.error("Erreur dans submitApplication:", error);
+
+      if (
+        error.message === "Offre d'emploi non trouvée" ||
+        error.message === "Utilisateur non trouvé"
+      ) {
         return res.status(404).json({ message: error.message });
       }
-      
-      if (error.message === 'Vous avez déjà postulé à cette offre') {
+
+      if (error.message === "Vous avez déjà postulé à cette offre") {
         return res.status(400).json({ message: error.message });
       }
 
-      res.status(500).json({ 
+      res.status(500).json({
         message: "Erreur lors de l'envoi de la candidature",
-        detail: error.message 
+        detail: error.message,
       });
     }
   }

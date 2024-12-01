@@ -36,32 +36,32 @@ class JobService {
     try {
       // Vérifier si l'offre existe
       const jobExists = await db.query(
-        'SELECT id_offre FROM Offre_emploi WHERE id_offre = $1',
+        "SELECT id_offre FROM Offre_emploi WHERE id_offre = $1",
         [applicationData.id_offre]
       );
 
       if (jobExists.rows.length === 0) {
-        throw new Error('Offre d\'emploi non trouvée');
+        throw new Error("Offre d'emploi non trouvée");
       }
 
       // Vérifier si l'utilisateur existe
       const userExists = await db.query(
-        'SELECT id_user FROM Users WHERE id_user = $1',
+        "SELECT id_user FROM Users WHERE id_user = $1",
         [applicationData.id_user]
       );
 
       if (userExists.rows.length === 0) {
-        throw new Error('Utilisateur non trouvé');
+        throw new Error("Utilisateur non trouvé");
       }
 
       // Vérifier si une candidature existe déjà
       const existingApplication = await db.query(
-        'SELECT id_candidature FROM Candidature WHERE id_offre = $1 AND id_user = $2',
+        "SELECT id_candidature FROM Candidature WHERE id_offre = $1 AND id_user = $2",
         [applicationData.id_offre, applicationData.id_user]
       );
 
       if (existingApplication.rows.length > 0) {
-        throw new Error('Vous avez déjà postulé à cette offre');
+        throw new Error("Vous avez déjà postulé à cette offre");
       }
 
       const query = `
@@ -70,20 +70,20 @@ class JobService {
         VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *
       `;
-      
+
       const values = [
         applicationData.date_candidature,
         applicationData.cv,
         applicationData.lettre_motivation,
         applicationData.statut,
         applicationData.id_offre,
-        applicationData.id_user
+        applicationData.id_user,
       ];
 
       const result = await db.query(query, values);
       return result.rows[0];
     } catch (error) {
-      console.error('Erreur dans createApplication:', error);
+      console.error("Erreur dans createApplication:", error);
       throw error;
     }
   }

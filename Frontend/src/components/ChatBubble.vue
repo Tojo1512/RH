@@ -1,4 +1,5 @@
 <template>
+
   <div class="chat-widget">
     <button v-if="!isOpen" @click="toggleChat" class="chat-bubble-button">
       <svg viewBox="0 0 24 24" class="chat-icon">
