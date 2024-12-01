@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const apiRoutes = require("./src/routes/api");
 const authRoutes = require("./src/routes/authRoutes");
+const evaluationRoutes = require("./src/routes/evaluationRoutes");
+const jobRoutes = require("./src/routes/jobRoutes");
 const app = express();
 
 app.use(express.json());
@@ -18,6 +20,14 @@ app.use(
 // Routes
 app.use("/api", apiRoutes);
 app.use("/api", authRoutes);
+app.use("/api/evaluation", evaluationRoutes);
+app.use("/api", jobRoutes);
+
+// Ajoutez cette ligne pour déboguer les routes
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
 // Gestion des erreurs
 app.use((err, req, res, next) => {
