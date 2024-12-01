@@ -205,4 +205,8 @@ h2 {
 .page-info {
   color: white;
 }
+
+.salaire {
+  color: #4caf50;
+}
 </style>
