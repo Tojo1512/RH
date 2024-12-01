@@ -1,0 +1,154 @@
+CREATE TABLE Users(
+   id_user SERIAL,
+   login VARCHAR(50)  NOT NULL,
+   mail VARCHAR(100)  NOT NULL,
+   mdp VARCHAR(250)  NOT NULL,
+   est_admin BOOLEAN NOT NULL,
+   PRIMARY KEY(id_user)
+);
+
+CREATE TABLE Type_contract(
+   id_type_contract SERIAL,
+   nom VARCHAR(50)  NOT NULL,
+   description VARCHAR(50)  NOT NULL,
+   duree INTEGER NOT NULL,
+   PRIMARY KEY(id_type_contract)
+);
+
+CREATE TABLE Types_conge(
+   id_conge SERIAL,
+   type VARCHAR(50)  NOT NULL,
+   est_remunere BOOLEAN,
+   nombre VARCHAR(50)  NOT NULL,
+   PRIMARY KEY(id_conge)
+);
+
+CREATE TABLE Salaire(
+   id_salaire SERIAL,
+   type VARCHAR(50)  NOT NULL,
+   montant NUMERIC(15,2)   NOT NULL,
+   PRIMARY KEY(id_salaire)
+);
+
+CREATE TABLE Services(
+   id_service SERIAL,
+   nom VARCHAR(50)  NOT NULL,
+   PRIMARY KEY(id_service)
+);
+
+CREATE TABLE Categorie_personnel(
+   id_categorie_personnel SERIAL,
+   nom VARCHAR(50)  NOT NULL,
+   poste VARCHAR(50)  NOT NULL,
+   id_salaire SERIAL NOT NULL,
+   PRIMARY KEY(id_categorie_personnel),
+   FOREIGN KEY(id_salaire) REFERENCES Salaire(id_salaire)
+);
+
+CREATE TABLE Personnels(
+   id_personnel SERIAL,
+   matricule VARCHAR(50)  NOT NULL,
+   nom VARCHAR(100)  NOT NULL,
+   prenom VARCHAR(250)  NOT NULL,
+   date_naissance DATE NOT NULL,
+   adresse VARCHAR(50)  NOT NULL,
+   date_embauche DATE NOT NULL,
+   id_service INTEGER NOT NULL,
+   id_categorie_personnel INTEGER NOT NULL,
+   id_user INTEGER NOT NULL,
+   PRIMARY KEY(id_personnel),
+   UNIQUE(id_user),
+   FOREIGN KEY(id_service) REFERENCES Services(id_service),
+   FOREIGN KEY(id_categorie_personnel) REFERENCES Categorie_personnel(id_categorie_personnel),
+   FOREIGN KEY(id_user) REFERENCES Users(id_user)
+);
+
+CREATE TABLE Demandes_conge(
+   id_demande_congee SERIAL,
+   date_demande TIMESTAMP NOT NULL,
+   date_fin TIMESTAMP NOT NULL,
+   motif VARCHAR(250) ,
+   duree INTEGER NOT NULL,
+   est_approuvee BOOLEAN NOT NULL,
+   id_conge INTEGER NOT NULL,
+   id_personnel INTEGER NOT NULL,
+   PRIMARY KEY(id_demande_congee),
+   FOREIGN KEY(id_conge) REFERENCES Types_conge(id_conge),
+   FOREIGN KEY(id_personnel) REFERENCES Personnels(id_personnel)
+);
+
+CREATE TABLE Absences(
+   id_absence SERIAL,
+   date_absence DATE NOT NULL,
+   id_personnel INTEGER NOT NULL,
+   PRIMARY KEY(id_absence),
+   FOREIGN KEY(id_personnel) REFERENCES Personnels(id_personnel)
+);
+
+CREATE TABLE Heure_sup(
+   id_heure_sup SERIAL,
+   date_heure_sup DATE NOT NULL,
+   duree INTEGER NOT NULL,
+   id_personnel INTEGER NOT NULL,
+   PRIMARY KEY(id_heure_sup),
+   FOREIGN KEY(id_personnel) REFERENCES Personnels(id_personnel)
+);
+
+CREATE TABLE Heure_nuit(
+   id_heure_nuit SERIAL,
+   date_heure_nuit DATE NOT NULL,
+   duree INTEGER NOT NULL,
+   id_personnel INTEGER NOT NULL,
+   PRIMARY KEY(id_heure_nuit),
+   FOREIGN KEY(id_personnel) REFERENCES Personnels(id_personnel)
+);
+
+CREATE TABLE Contrats(
+   id_personnel SERIAL ,
+   id_type_contract SERIAL,
+   date_debut DATE NOT NULL,
+   date_fin DATE NOT NULL,
+   duree VARCHAR(50)  NOT NULL,
+   PRIMARY KEY(id_personnel, id_type_contract),
+   FOREIGN KEY(id_personnel) REFERENCES Personnels(id_personnel),
+   FOREIGN KEY(id_type_contract) REFERENCES Type_contract(id_type_contract)
+);
+
+CREATE TABLE droit_conge(
+   id_personnel SERIAL,
+   id_conge SERIAL,
+   annee INTEGER NOT NULL,
+   PRIMARY KEY(id_personnel, id_conge),
+   FOREIGN KEY(id_personnel) REFERENCES Personnels(id_personnel),
+   FOREIGN KEY(id_conge) REFERENCES Types_conge(id_conge)
+);
+
+CREATE TABLE Offre_emploi(
+   id_offre SERIAL PRIMARY KEY,
+   titre VARCHAR(100) NOT NULL,
+   description TEXT NOT NULL,
+   date_publication DATE NOT NULL,
+   date_limite_candidature DATE NOT NULL,
+   statut VARCHAR(50) NOT NULL,
+   salaire_min NUMERIC(15,2),
+   salaire_max NUMERIC(15,2),
+   id_service INTEGER NOT NULL,
+   id_type_contract INTEGER NOT NULL,
+   id_categorie_personnel INTEGER NOT NULL,
+   FOREIGN KEY(id_service) REFERENCES Services(id_service),
+   FOREIGN KEY(id_type_contract) REFERENCES Type_contract(id_type_contract),
+   FOREIGN KEY(id_categorie_personnel) REFERENCES Categorie_personnel(id_categorie_personnel)
+);
+
+
+CREATE TABLE Candidature(
+   id_candidature SERIAL PRIMARY KEY,
+   date_candidature DATE NOT NULL,
+   cv TEXT NOT NULL,
+   lettre_motivation TEXT NOT NULL,
+   statut VARCHAR(50) NOT NULL,
+   id_offre INTEGER NOT NULL,
+   id_user INTEGER NOT NULL,
+   FOREIGN KEY(id_offre) REFERENCES Offre_emploi(id_offre),
+   FOREIGN KEY(id_user) REFERENCES Users(id_user)
+);
