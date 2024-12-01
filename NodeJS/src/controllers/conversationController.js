@@ -49,30 +49,12 @@ class ConversationController {
         }) + "\n"
       );
 
-      // 4. Obtenir la réponse de l'IA avec timeout et états intermédiaires
+      // 4. Obtenir la réponse de l'IA
       try {
-        const aiResponse = await Promise.race([
-          aiService.generateResponse(
-            message,
-            conversationService.getConversation(conversationId)
-          ),
-          new Promise((_, reject) => {
-            setTimeout(() => {
-              res.write(
-                JSON.stringify({
-                  type: "status",
-                  status: "timeout-warning",
-                  message: "La réponse prend plus de temps que prévu...",
-                }) + "\n"
-              );
-            }, 10000); // Avertissement après 10s
-
-            setTimeout(
-              () => reject(new Error("Délai de réponse dépassé")),
-              30000
-            );
-          }),
-        ]);
+        const aiResponse = await aiService.generateResponse(
+          message,
+          conversationService.getConversation(conversationId)
+        );
 
         // 5. Sauvegarder la réponse de l'IA
         const assistantMessage = await conversationService.addMessage(
@@ -81,45 +63,42 @@ class ConversationController {
           "assistant"
         );
 
-        // 6. Envoyer la réponse finale
+        // 6. Envoyer la réponse finale et terminer
         res.write(
-          JSON.stringify({
-            type: "status",
-            status: "completed",
-            message: "Traitement terminé",
-          }) + "\n"
-        );
-
-        res.end(
           JSON.stringify({
             type: "assistantMessage",
             message: assistantMessage,
-          })
-        );
-      } catch (error) {
-        // Gestion des erreurs pendant la génération
-        res.write(
-          JSON.stringify({
-            type: "status",
-            status: "error",
-            message: "Erreur pendant la génération de la réponse",
           }) + "\n"
         );
 
-        res.end(
+        res.end(); // Terminer la réponse ici
+      } catch (error) {
+        // En cas d'erreur pendant la génération
+        res.write(
           JSON.stringify({
             type: "error",
             error: error.message,
-          })
+          }) + "\n"
         );
+
+        res.end(); // Terminer la réponse en cas d'erreur
       }
     } catch (error) {
-      // Erreur générale
-      res.status(500).json({
-        type: "error",
-        error: error.message,
-        status: "error",
-      });
+      // Ne pas utiliser res.json() ici car les headers ont peut-être déjà été envoyés
+      if (!res.headersSent) {
+        res.status(500).json({
+          type: "error",
+          error: error.message,
+        });
+      } else {
+        res.write(
+          JSON.stringify({
+            type: "error",
+            error: error.message,
+          }) + "\n"
+        );
+        res.end();
+      }
     }
   }
 

@@ -1,41 +1,84 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Gestion des Congés</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <router-link class="nav-link" to="/">Accueil</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/app">Application</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/demandes-conge">Demandes de Congé</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/droit-conge">Droits de Congé</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" to="/types-conge">Types de Congé</router-link>
-          </li>
-        </ul>
-      </div>
+  <nav class="navbar">
+    <div class="nav-brand">Mon Application</div>
+    <div class="nav-links">
+      <span class="user-name">Bienvenue, {{ userName }}</span>
+      <router-link to="/home">Accueil</router-link>
+
+      <a @click="logout" class="logout-btn">Déconnexion</a>
     </div>
   </nav>
 </template>
 
 <script>
 export default {
-  name: 'NavBar',
-};
+  name: 'Navbar',
+  data() {
+    return {
+      userName: '',
+    }
+  },
+  created() {
+    // Récupérer les données utilisateur du localStorage
+    const userData = localStorage.getItem('user')
+    if (userData) {
+      const user = JSON.parse(userData)
+      this.userName = user.user.login
+    }
+  },
+  methods: {
+    logout() {
+      localStorage.removeItem('user')
+      this.$router.push('/')
+    },
+  },
+}
 </script>
 
 <style scoped>
 .navbar {
-  margin-bottom: 20px;
+  background-color: #333;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
-</style> 
+
+.nav-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.nav-links a:hover {
+  color: #4caf50;
+}
+
+.user-name {
+  color: #4caf50;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.logout-btn {
+  color: #ff4444 !important;
+}
+</style>

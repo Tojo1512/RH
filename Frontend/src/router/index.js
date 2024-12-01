@@ -1,28 +1,47 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import Layout from '@/components/Layout.vue';
-import HomePage from '@/pages/HomePage.vue';
-import App from '@/App.vue';
-import DemandesCongePage from '@/pages/DemandesCongePage.vue';
-import DroitCongePage from '@/pages/DroitCongePage.vue';
-import TypesCongePage from '@/pages/TypesCongePage.vue';
+
+import { createRouter, createWebHistory } from 'vue-router'
+import LoginForm from '@/components/LoginForm.vue'
+import Home from '@/views/Home.vue'
 
 const routes = [
   {
     path: '/',
-    component: Layout,
-    children: [
-      { path: '', component: HomePage },
-      { path: 'app', component: App },
-      { path: 'demandes-conge', component: DemandesCongePage },
-      { path: 'droit-conge', component: DroitCongePage },
-      { path: 'types-conge', component: TypesCongePage },
-    ],
+    name: 'Login',
+    component: LoginForm,
+    meta: { requiresGuest: true },
   },
-];
+  {
+    path: '/home',
+    name: 'Home',
+    component: Home,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/',
+  },
+  {
+    path: '/job/:id',
+    name: 'JobDetail',
+    component: () => import('../views/JobDetail.vue')
+  },
+]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-});
+})
 
-export default router; 
+router.beforeEach((to, from, next) => {
+  const user = localStorage.getItem('user')
+
+  if (to.meta.requiresAuth && !user) {
+    next('/')
+  } else if (to.meta.requiresGuest && user) {
+    next('/home')
+  } else {
+    next()
+  }
+})
+
+export default router
