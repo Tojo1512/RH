@@ -2,7 +2,7 @@
   <div class="home">
     <Navbar />
     <div class="home-container">
-      <NotificationCenter v-if="userData?.user.id_user" :userId="userData.user.id_user" />
+      <NotificationCenter :userId="userData?.user.id" />
 
       <!-- Bouton flottant pour l'évaluation -->
       <div class="evaluation-floating-button" @click="showEvaluation = true">
@@ -19,7 +19,7 @@
       </div>
 
       <!-- Contenu existant -->
-      <h1>Bienvenue {{ userData?.login }}</h1>
+      <h1>Bienvenue {{ userData?.user.login }}</h1>
       <div class="content">
         <div class="jobs-container">
           <h2>Offres d'emploi disponibles</h2>

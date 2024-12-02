@@ -3,14 +3,8 @@ const Evaluation = require("../models/evaluation");
 
 class EvaluationService {
   async generateQuestions(theme) {
-    const prompt = `Génère 5 questions QCM sur ${theme}. Format strict:
+    const prompt = `Génère 5 questions sur ${theme}. Format strict:
 Q1: [question courte]
-a) [réponse]
-b) [réponse]
-c) [réponse]
-d) [réponse]
-Correct: [a/b/c/d]
-
 Q2: ...`;
 
     try {

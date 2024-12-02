@@ -37,10 +37,19 @@ export default {
     },
     async fetchNotifications() {
       try {
-        console.log('UserId:', this.userId)
-        const response = await axios.get(`http://localhost:3000/api/notifications/${this.userId}`)
-        console.log('Réponse notifications:', response.data)
-        this.notifications = response.data
+        const user = JSON.parse(localStorage.getItem('user'))
+        if (!user.user.id) {
+          console.error('Aucun utilisateur connecté')
+          return
+        }
+
+        console.log('Récupération des notifications pour:', user.user.id)
+        const response = await axios.get(`/api/notifications/${user.user.id}`)
+
+        if (response.data.success) {
+          this.notifications = response.data.notifications
+          console.log('Notifications reçues:', this.notifications)
+        }
       } catch (error) {
         console.error('Erreur lors de la récupération des notifications:', error)
       }

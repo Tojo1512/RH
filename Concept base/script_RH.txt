@@ -154,13 +154,19 @@ CREATE TABLE Candidature(
 );
 
 CREATE TABLE Notifications (
-  id_notification SERIAL PRIMARY KEY,
-  id_user INTEGER REFERENCES Users(id_user),
-  message TEXT NOT NULL,
-  type VARCHAR(50) NOT NULL,
-  date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  lu BOOLEAN DEFAULT FALSE
+    id SERIAL PRIMARY KEY,
+    userId INTEGER NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    type VARCHAR(10) DEFAULT 'success' CHECK (type IN ('success', 'error')),
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    read BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (userId) REFERENCES Users(id_user)
 );
+
+-- Index pour améliorer les performances des requêtes fréquentes
+CREATE INDEX idx_notifications_userid ON Notifications(userId);
+CREATE INDEX idx_notifications_read ON Notifications(read);
+
 
 CREATE TABLE IF NOT EXISTS conversations (
     id_conversation SERIAL PRIMARY KEY,

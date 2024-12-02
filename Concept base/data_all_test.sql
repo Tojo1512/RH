@@ -84,6 +84,45 @@ INSERT INTO Offre_emploi (
     4, -- Service Marketing
     3, -- Stage
     4  -- Marketing
+),
+(
+    'Architecte Solution Senior',
+    'Nous recherchons un architecte solution expérimenté pour diriger la conception technique
+    de nos projets majeurs. Minimum 8 ans d''expérience requise.',
+    CURRENT_DATE,
+    CURRENT_DATE + INTERVAL '45 days',
+    'Actif',
+    65000.00,
+    80000.00,
+    2, -- Service Informatique
+    1, -- CDI
+    2  -- Architecte
+),
+(
+    'Alternance - Comptabilité',
+    'Formation en alternance de 24 mois en comptabilité. Vous participerez à la gestion
+    comptable quotidienne et à la préparation des bilans.',
+    CURRENT_DATE,
+    CURRENT_DATE + INTERVAL '15 days',
+    'Actif',
+    15000.00,
+    15000.00,
+    3, -- Service Comptabilité
+    4, -- Alternance
+    4  -- Chef de projet
+),
+(
+    'Chef de Projet Marketing',
+    'Poste de chef de projet marketing pour piloter nos campagnes internationales.
+    Expérience en gestion d''équipe et marketing digital requise.',
+    CURRENT_DATE - INTERVAL '1 day',
+    CURRENT_DATE + INTERVAL '40 days',
+    'Actif',
+    45000.00,
+    55000.00,
+    4, -- Service Marketing
+    1, -- CDI
+    4  -- Marketing
 );
 
 -- Insertion des candidatures de test

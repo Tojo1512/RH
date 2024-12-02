@@ -143,86 +143,132 @@ class JobController {
   async updateApplicationStatus(req, res) {
     const { id } = req.params;
     const { statut } = req.body;
-    
+
     try {
-      // Mise à jour du statut
+      console.log(
+        `Mise à jour du statut de la candidature ${id} vers ${statut}`
+      );
+
+      // Mise à jour du statut et récupération de l'id_user
       const updateQuery = `
         UPDATE Candidature 
         SET statut = $1 
         WHERE id_candidature = $2 
-        RETURNING id_user
+        RETURNING id_user, statut
       `;
-      
+
       const result = await db.query(updateQuery, [statut, id]);
-      
+      console.log("Résultat de la mise à jour:", result.rows[0]);
+
       if (result.rows.length === 0) {
+        console.log("Candidature non trouvée");
         return res.status(404).json({ message: "Candidature non trouvée" });
       }
 
-      // Créer une notification
+      const userId = result.rows[0].id_user;
+      console.log("UserId pour la notification:", userId);
+
+      // Créer une notification avec le nom de colonne en minuscules
       const notificationQuery = `
         INSERT INTO Notifications (
-          id_user,
+          userid,
           message,
           type,
-          date_creation,
-          lu
-        ) VALUES ($1, $2, $3, NOW(), false)
+          date,
+          read
+        ) VALUES ($1, $2, $3, CURRENT_TIMESTAMP, false)
+        RETURNING *
       `;
 
       const message = `Votre candidature a été ${statut.toLowerCase()}.`;
-      const type = statut === 'Acceptée' ? 'success' : 'error';
-      
-      await db.query(notificationQuery, [
-        result.rows[0].id_user,
+      const type = statut === "Acceptée" ? "success" : "error";
+
+      console.log("Création de la notification avec les paramètres:", {
+        userId,
         message,
-        type
+        type,
+      });
+
+      const notificationResult = await db.query(notificationQuery, [
+        userId,
+        message,
+        type,
       ]);
 
-      res.json({ success: true, message: "Statut mis à jour et notification créée" });
-      
+      console.log("Notification créée:", notificationResult.rows[0]);
+
+      res.json({
+        success: true,
+        message: "Statut mis à jour et notification créée",
+        notification: notificationResult.rows[0],
+      });
     } catch (error) {
-      console.error('Erreur:', error);
-      res.status(500).json({ success: false, message: "Erreur lors de la mise à jour" });
+      console.error("Erreur détaillée:", error);
+      res.status(500).json({
+        success: false,
+        message: "Erreur lors de la mise à jour",
+        error: error.message,
+      });
     }
   }
 
   // Nouvelles méthodes pour les notifications
   async getUserNotifications(req, res) {
     const { userId } = req.params;
-    
+
     try {
+      console.log("Récupération des notifications pour userId:", userId);
+
       const query = `
         SELECT * FROM Notifications 
-        WHERE id_user = $1 AND lu = false 
-        ORDER BY date_creation DESC
+        WHERE userid = $1 AND read = false 
+        ORDER BY date DESC
       `;
-      
+
       const { rows } = await db.query(query, [userId]);
-      res.json(rows);
-      
+      console.log("Notifications trouvées:", rows.length);
+
+      res.json({
+        success: true,
+        notifications: rows,
+      });
     } catch (error) {
-      console.error('Erreur:', error);
-      res.status(500).json({ message: "Erreur lors de la récupération des notifications" });
+      console.error("Erreur lors de la récupération des notifications:", error);
+      res.status(500).json({
+        success: false,
+        message: "Erreur lors de la récupération des notifications",
+        error: error.message,
+      });
     }
   }
 
   async markNotificationAsRead(req, res) {
     const { id } = req.params;
-    
+
     try {
+      console.log("Marquage de la notification comme lue:", id);
+
       const query = `
         UPDATE Notifications 
-        SET lu = true 
-        WHERE id_notification = $1
+        SET read = true 
+        WHERE id = $1
+        RETURNING *
       `;
-      
-      await db.query(query, [id]);
-      res.json({ success: true });
-      
+
+      const result = await db.query(query, [id]);
+      console.log("Notification mise à jour:", result.rows[0]);
+
+      res.json({
+        success: true,
+        notification: result.rows[0],
+      });
     } catch (error) {
-      console.error('Erreur:', error);
-      res.status(500).json({ message: "Erreur lors du marquage de la notification" });
+      console.error("Erreur lors du marquage de la notification:", error);
+      res.status(500).json({
+        success: false,
+        message: "Erreur lors du marquage de la notification",
+        error: error.message,
+      });
     }
   }
 }
@@ -237,7 +283,9 @@ module.exports = {
   submitApplication: jobController.submitApplication.bind(jobController),
   getUserApplications: jobController.getUserApplications.bind(jobController),
   getAllApplications: jobController.getAllApplications.bind(jobController),
-  updateApplicationStatus: jobController.updateApplicationStatus.bind(jobController),
+  updateApplicationStatus:
+    jobController.updateApplicationStatus.bind(jobController),
   getUserNotifications: jobController.getUserNotifications.bind(jobController),
-  markNotificationAsRead: jobController.markNotificationAsRead.bind(jobController),
+  markNotificationAsRead:
+    jobController.markNotificationAsRead.bind(jobController),
 };

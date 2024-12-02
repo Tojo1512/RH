@@ -8,4 +8,9 @@ router.get("/offres/:id", jobController.getJobById);
 router.post("/candidatures", jobController.submitApplication);
 router.get("/candidatures/:userId", jobController.getUserApplications);
 
+// Ajout de la nouvelle route pour toutes les candidatures
+router.get("/candidatures", jobController.getAllApplications);
+// Route pour mettre à jour le statut d'une candidature
+router.put("/candidatures/:id", jobController.updateApplicationStatus);
+
 module.exports = router;

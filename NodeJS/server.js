@@ -5,6 +5,7 @@ const apiRoutes = require("./src/routes/api");
 const authRoutes = require("./src/routes/authRoutes");
 const evaluationRoutes = require("./src/routes/evaluationRoutes");
 const jobRoutes = require("./src/routes/jobRoutes");
+const notificationRoutes = require("./src/routes/notificationRoutes");
 const app = express();
 
 // Middleware CORS personnalisé
@@ -47,6 +48,7 @@ app.use("/api", apiRoutes);
 app.use("/api", authRoutes);
 app.use("/api/evaluation", evaluationRoutes);
 app.use("/api", jobRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // Ajoutez cette ligne pour déboguer les routes
 app.use((req, res, next) => {
