@@ -2,6 +2,23 @@
   <div class="home">
     <Navbar />
     <div class="home-container">
+      <NotificationCenter v-if="userData?.user.id_user" :userId="userData.user.id_user" />
+
+      <!-- Bouton flottant pour l'évaluation -->
+      <div class="evaluation-floating-button" @click="showEvaluation = true">
+        <span class="evaluation-icon">📝</span>
+        <span class="evaluation-text">Test de compétences</span>
+      </div>
+
+      <!-- Modal pour l'évaluation -->
+      <div v-if="showEvaluation" class="evaluation-modal">
+        <div class="evaluation-modal-content">
+          <button class="close-button" @click="showEvaluation = false">&times;</button>
+          <EvaluationCard />
+        </div>
+      </div>
+
+      <!-- Contenu existant -->
       <h1>Bienvenue {{ userData?.login }}</h1>
       <div class="content">
         <div class="jobs-container">
@@ -49,6 +66,8 @@
 <script>
 import Navbar from '@/components/Navbar.vue'
 import ChatBubble from '@/components/ChatBubble.vue'
+import NotificationCenter from '@/components/NotificationCenter.vue'
+import EvaluationCard from '@/components/EvaluationCard.vue'
 import axios from 'axios'
 
 export default {
@@ -56,6 +75,8 @@ export default {
   components: {
     Navbar,
     ChatBubble,
+    NotificationCenter,
+    EvaluationCard,
   },
   data() {
     return {
@@ -64,6 +85,7 @@ export default {
       currentPage: 1,
       total: 0,
       itemsPerPage: 5,
+      showEvaluation: false, // Nouvel état pour contrôler l'affichage de l'évaluation
     }
   },
   computed: {
@@ -207,6 +229,79 @@ h2 {
 }
 
 .salaire {
+  color: #4caf50;
+}
+
+.evaluation-floating-button {
+  position: fixed;
+  bottom: 100px;
+  right: 30px;
+  background: #4caf50;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
+  z-index: 999;
+}
+
+.evaluation-floating-button:hover {
+  transform: translateY(-2px);
+  background: #45a049;
+}
+
+.evaluation-icon {
+  font-size: 1.2rem;
+}
+
+.evaluation-text {
+  font-weight: 500;
+}
+
+.evaluation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.evaluation-modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #121212;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 1;
+}
+
+.close-button:hover {
   color: #4caf50;
 }
 </style>
