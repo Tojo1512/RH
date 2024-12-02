@@ -3,7 +3,8 @@
     <div class="nav-brand">Mon Application</div>
     <div class="nav-links">
       <span class="user-name">Bienvenue, {{ userName }}</span>
-      <router-link to="/home">Accueil</router-link>
+      <router-link v-if="!userData?.user.est_admin" to="/home_user">Accueil</router-link>
+      <router-link v-else to="/home_admin">Accueil</router-link>
 
       <a @click="logout" class="logout-btn">Déconnexion</a>
     </div>

@@ -1,7 +1,7 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginForm from '@/components/LoginForm.vue'
-import Home from '@/views/Home.vue'
+import Home from '@/views/Home_admin.vue'
 
 const routes = [
   {
@@ -11,8 +11,8 @@ const routes = [
     meta: { requiresGuest: true },
   },
   {
-    path: '/home',
-    name: 'Home',
+    path: '/home_admin',
+    name: 'HomeAdmin',
     component: Home,
     meta: { requiresAuth: true },
   },
@@ -23,7 +23,13 @@ const routes = [
   {
     path: '/job/:id',
     name: 'JobDetail',
-    component: () => import('../views/JobDetail.vue')
+    component: () => import('../views/JobDetail.vue'),
+  },
+  {
+    path: '/home_user',
+    name: 'HomeUser',
+    component: () => import('../views/Home_user.vue'),
+    meta: { requiresAuth: true },
   },
 ]
 
@@ -38,7 +44,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !user) {
     next('/')
   } else if (to.meta.requiresGuest && user) {
-    next('/home')
+    next('/home_admin')
   } else {
     next()
   }

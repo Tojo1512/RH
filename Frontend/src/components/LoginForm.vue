@@ -42,7 +42,11 @@ export default {
 
         if (response.data.success) {
           localStorage.setItem('user', JSON.stringify(response.data))
-          this.$router.push('/home')
+          if (JSON.parse(localStorage.getItem('user')).user.est_admin) {
+            this.$router.push('/home_admin')
+          } else {
+            this.$router.push('/home_user')
+          }
         }
       } catch (error) {
         if (error.response?.status === 401) {

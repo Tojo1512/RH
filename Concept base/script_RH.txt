@@ -152,3 +152,33 @@ CREATE TABLE Candidature(
    FOREIGN KEY(id_offre) REFERENCES Offre_emploi(id_offre),
    FOREIGN KEY(id_user) REFERENCES Users(id_user)
 );
+
+CREATE TABLE Notifications (
+    id SERIAL PRIMARY KEY,
+    userId INTEGER NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    type VARCHAR(10) DEFAULT 'success' CHECK (type IN ('success', 'error')),
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    read BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (userId) REFERENCES Users(id_user)
+);
+
+-- Index pour améliorer les performances des requêtes fréquentes
+CREATE INDEX idx_notifications_userid ON Notifications(userId);
+CREATE INDEX idx_notifications_read ON Notifications(read);
+
+
+CREATE TABLE IF NOT EXISTS conversations (
+    id_conversation SERIAL PRIMARY KEY,
+    id_user INTEGER REFERENCES users(id_user),
+    content TEXT NOT NULL,
+    role VARCHAR(10) CHECK (role IN ('user', 'assistant')),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user
+        FOREIGN KEY(id_user)
+        REFERENCES users(id_user)
+        ON DELETE CASCADE
+);
+
+-- Index pour améliorer les performances des requêtes
+CREATE INDEX idx_conversations_user_timestamp ON conversations(id_user, timestamp);

@@ -75,7 +75,8 @@ class AIService {
   }
 
   async generateQuestions() {
-    const prompt = "Génère 5 questions pour évaluer les connaissances. Format: Q1: question1; Q2: question2; etc.";
+    const prompt =
+      "Génère 5 questions pour évaluer les connaissances. Format: Q1: question1; Q2: question2; etc.";
     const response = await this.generateResponse(prompt, []);
     return this.parseQuestions(response);
   }
@@ -86,14 +87,16 @@ class AIService {
   }
 
   async generateFinalEvaluation(answers) {
-    const prompt = `Voici les réponses de l'utilisateur aux 5 questions:\n${answers.join('\n')}\nDonne une note sur 10 et une remarque générale. Format: NOTE: X/10\nREMARQUE: commentaire`;
+    const prompt = `Voici les réponses de l'utilisateur aux 5 questions:\n${answers.join(
+      "\n"
+    )}\nDonne une note sur 10 et une remarque générale. Format: NOTE: X/10\nREMARQUE: commentaire`;
     const response = await this.generateResponse(prompt, []);
     return this.parseFinalEvaluation(response);
   }
 
   parseQuestions(response) {
     // Parse la réponse de l'IA pour extraire les questions
-    const questions = response.split(';').map(q => q.trim());
+    const questions = response.split(";").map((q) => q.trim());
     return questions;
   }
 
@@ -101,10 +104,10 @@ class AIService {
     // Parse la note et la remarque
     const noteMatch = response.match(/NOTE:\s*(\d+)\/10/);
     const remarqueMatch = response.match(/REMARQUE:\s*(.*)/);
-    
+
     return {
       note: noteMatch ? parseInt(noteMatch[1]) : 0,
-      remarque: remarqueMatch ? remarqueMatch[1] : ''
+      remarque: remarqueMatch ? remarqueMatch[1] : "",
     };
   }
 }
